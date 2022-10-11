@@ -1,0 +1,5 @@
+string table
+string key
+string[] value
+---
+bool status
