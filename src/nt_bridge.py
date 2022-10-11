@@ -7,26 +7,26 @@ from networktables import NetworkTables
 
 class NTbridge(object):
     def __init__(self):
-        NetworkTables.initialize(server=rospy.get_param('/nt_bridge/server', '10.12.34.2')) # VMX-pi IP Address
+        NetworkTables.initialize(server=rospy.get_param('server', '10.12.34.2')) # VMX-pi IP Address
         self._tables = {}
 
-        rx_tables: list[str] = rospy.get_param('/nt_bridge/tables/rx', [])
-        tx_tables: list[str] = rospy.get_param('/nt_bridge/tables/tx', [])
+        rx_tables: list[str] = rospy.get_param('tables/rx', [])
+        tx_tables: list[str] = rospy.get_param('tables/tx', [])
 
         for table in rx_tables + tx_tables:
             entry = {'networktable': NetworkTables.getTable(table)}
             if table in rx_tables:
-                entry['rx_publisher'] = rospy.Publisher(f'/nt_bridge/{table}/rx', NTEntryUpdate, queue_size=10)
+                entry['rx_publisher'] = rospy.Publisher(f'{table}/rx', NTEntryUpdate, queue_size=10)
                 entry['networktable'].addEntryListener(self._table_update, localNotify=rospy.get_param('/nt_bridge/localnotify', False))
             if table in tx_tables:
-                entry['tx_subscriber'] = rospy.Subscriber(f'/nt_bridge/{table}/tx', TXMessage, self._table_tx, callback_args=table)
-                entry['tx_array_subscriber'] = rospy.Subscriber(f'/nt_bridge/{table}/tx_array', TXArrayMessage, self._table_tx_array, callback_args=table) 
+                entry['tx_subscriber'] = rospy.Subscriber(f'{table}/tx', TXMessage, self._table_tx, callback_args=table)
+                entry['tx_array_subscriber'] = rospy.Subscriber(f'{table}/tx_array', TXArrayMessage, self._table_tx_array, callback_args=table) 
             self._tables[table] = entry
         
-        self.get_entry_service = rospy.Service('/nt_bridge/get_entry', GetNTEntry, self._get_entry_string)
-        self.get_entry_arr_service = rospy.Service('/nt_bridge/get_entry_array', GetNTEntryArray, self._get_entry_string_array)
-        self.set_entry_service = rospy.Service('/nt_bridge/set_entry', SetNTEntry, self._set_entry_string)
-        self.set_entry_arr_service = rospy.Service('/nt_bridge/set_entry_array', SetNTEntryArray, self._set_entry_string_array)
+        self._get_entry_service = rospy.Service('get_entry', GetNTEntry, self._get_entry_string)
+        self._get_entry_arr_service = rospy.Service('get_entry_array', GetNTEntryArray, self._get_entry_string_array)
+        self._set_entry_service = rospy.Service('set_entry', SetNTEntry, self._set_entry_string)
+        self._set_entry_arr_service = rospy.Service('set_entry_array', SetNTEntryArray, self._set_entry_string_array)
 
     def _table_update(self, table, key, value, isNew):
         ftable = str(table).split('/')[1]
