@@ -38,6 +38,10 @@ class NTbridge(object):
         self._set_entry_service = rospy.Service('~set_entry', SetNTEntry, self._set_entry_string)
         self._set_entry_arr_service = rospy.Service('~set_entry_array', SetNTEntryArray, self._set_entry_string_array)
 
+    def _tx_check(self) -> None:
+        if (not NetworkTables.isConnected()):
+            rospy.logerr("NetworkTables bridge is not connected to a NetworkTables instance.")
+    
     def _table_update(self, table, key, value, isNew) -> None:
         ftable = str(table).split('/')[1]
         # rospy.loginfo(f"Table Update Triggered. Table: {ftable} Key: {key} Value: {value} IsNew: {isNew}")
@@ -46,10 +50,12 @@ class NTbridge(object):
     
     def _table_tx(self, data, table: str) -> None:
         # rospy.loginfo(f"Table TX {table}: {data}")
+        self._tx_check()
         self._tables[table].networktable.getEntry(data.key).setString(str(data.value))
 
     def _table_tx_array(self, data, table: str) -> None:
         # rospy.loginfo(f"Table Array TX {table}: {data}")
+        self._tx_check()
         self._tables[table].networktable.getEntry(data.key).setStringArray(data.value)
 
     def _get_entry_string(self, req: GetNTEntryRequest) -> GetNTEntryResponse:
