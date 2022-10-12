@@ -1,8 +1,8 @@
 <launch>
     <node name="nt_bridge" pkg="ros_networktables" type="nt_bridge.py" output="screen">
-      <rosparam param="tables/rx">["DrivebaseSubsystem", "DiggingSubsystem", "DumpingSubsystem"]</rosparam>
-      <rosparam param="tables/tx">["DrivebaseControl", "DiggingControl", "DumpingControl"]</rosparam>
-      <param name="server" type="str" value="10.12.34.2" />
-      <param name="localnotify" type="bool" value="False" />
+        <rosparam param="tables/rx">["DrivebaseSubsystem", "DiggingSubsystem", "DumpingSubsystem"]</rosparam>
+        <rosparam param="tables/tx">["DrivebaseControl", "DiggingControl", "DumpingControl"]</rosparam>
+        <param name="server" type="str" value="10.12.34.2" />
+        <param name="localnotify" type="bool" value="False" />
     </node>
 </launch>
